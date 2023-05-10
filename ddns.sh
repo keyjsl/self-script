@@ -16,8 +16,9 @@ sleep 5
 echo "Running warp-go o in root"
 echo "0" | warp-go o
 
-echo "Fetch current IPv4 address from eth0 network interface"
-current_ip=$(ip -4 addr show dev eth0 | awk '/inet / {print $2}' | cut -d '/' -f1)
+echo "Fetch current IPv4 address from network interface"
+network_interface=$(ip -4 route show default | awk '/default/ {print $5}')
+current_ip=$(ip -4 addr show dev "$network_interface" | awk '/inet / {print $2}' | cut -d '/' -f1)
 
 echo "Resolve IP address to domain"
 ip_domain=$(dig -x "$current_ip" +short)
@@ -32,7 +33,8 @@ else
     while [[ $ip_domain != *"cloudflare"* ]]; do
         echo "Running warp-go o in root"
         echo "0" | warp-go o
-        current_ip=$(ip -4 addr show dev eth0 | awk '/inet / {print $2}' | cut -d '/' -f1)
+        network_interface=$(ip -4 route show default | awk '/default/ {print $5}')
+        current_ip=$(ip -4 addr show dev "$network_interface" | awk '/inet / {print $2}' | cut -d '/' -f1)
         ip_domain=$(dig -x "$current_ip" +short)
     done
 
