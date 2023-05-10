@@ -13,27 +13,31 @@ cd /root/cloudflare-ddns-updater
 echo "Wait for 5 seconds"
 sleep 5
 
-echo “Function to check if IP address belongs to Cloudflare”
-ip_belongs_to_cloudflare() {
-    local ip_address=$(curl -sS https://api.ipify.org)
-    if [[ $ip_address == *"Cloudflare"* ]]; then
-        return 0  # IP address belongs to Cloudflare
-    else
-        return 1  # IP address does not belong to Cloudflare
-    fi
-}
-
 echo "Running warp-go o in root"
 echo "0" | warp-go o
 
-echo "Checking IP address for Cloudflare"
-while ! ip_belongs_to_cloudflare; do
-    echo "IP address does not belong to Cloudflare, running warp-go o in root again"
-    echo "0" | warp-go o
-    sleep 5  echo "Wait for 5 seconds"
-done
+echo "Fetch current IPv4 address from eth0 network interface"
+current_ip=$(ip -4 addr show dev eth0 | awk '/inet / {print $2}' | cut -d '/' -f1)
 
-echo "IP address belongs to Cloudflare"
+echo "Resolve IP address to domain"
+ip_domain=$(dig -x "$current_ip" +short)
+
+echo "Checking if IPv4 address belongs to Cloudflare"
+if [[ $ip_domain == *"cloudflare"* ]]; then
+    echo "IPv4 address belongs to Cloudflare"
+else
+    echo "IPv4 address does not belong to Cloudflare, running warp-go o in root again"
+
+    echo "Re-run warp-go o until the IP address belongs to Cloudflare"
+    while [[ $ip_domain != *"cloudflare"* ]]; do
+        echo "Running warp-go o in root"
+        echo "0" | warp-go o
+        current_ip=$(ip -4 addr show dev eth0 | awk '/inet / {print $2}' | cut -d '/' -f1)
+        ip_domain=$(dig -x "$current_ip" +short)
+    done
+
+    echo "IPv4 address now belongs to Cloudflare"
+fi
 
 echo "Check if crontab entry already exists"
 if crontab -l | grep -q "/root/ddns.sh"; then
