@@ -16,6 +16,9 @@ sleep 5
 echo "Running warp-go o in root"
 echo "0" | warp-go o
 
+echo "Wait for 5 seconds"
+sleep 5
+
 echo "Fetch current IPv4 address from network interface"
 network_interface=$(ip -4 route show default | awk '/default/ {print $5}')
 current_ip=$(ip -4 addr show dev "$network_interface" | awk '/inet / {print $2}' | cut -d '/' -f1)
@@ -30,7 +33,7 @@ else
     echo "IPv4 address does not belong to Cloudflare, running warp-go o in root again"
 
     echo "Re-run warp-go o until the IP address belongs to Cloudflare"
-    while true; do
+    while false; do
         echo "Running warp-go o in root"
         echo "0" | warp-go o
         sleep 5
