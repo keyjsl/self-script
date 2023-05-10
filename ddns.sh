@@ -12,28 +12,35 @@ contains_maxis() {
     fi
 }
 
-# Initiate warp-go o on root
+# Echo step: Initiate warp-go o on root
+echo "Initiating warp-go o on root"
 warp-go o
+
+# Echo step: Checking if the IP address contains "Maxis"
+echo "Checking if the IP address contains 'Maxis'"
 
 # Check if the IP address contains "Maxis", wait if it doesn't
 while ! contains_maxis; do
     sleep 5
 done
 
-# Run cloudflare.sh and cloudflare2.sh in /root/cloudflare-ddns-updater
+# Echo step: Running cloudflare.sh and cloudflare2.sh in /root/cloudflare-ddns-updater
+echo "Running cloudflare.sh and cloudflare2.sh in /root/cloudflare-ddns-updater"
 cd /root/cloudflare-ddns-updater
 ./cloudflare.sh
-
-# Wait for 5 seconds
-sleep 3
-
 ./cloudflare2.sh
 
-# Wait for 5 seconds
-sleep 3
+# Echo step: Waiting for 5 seconds
+echo "Waiting for 5 seconds"
+sleep 5
 
-# Run warp-go o in root
+# Echo step: Running warp-go o in root
+echo "Running warp-go o in root"
 warp-go o
 
-# Update crontab entry to schedule script every hour
-(crontab -e ; echo "0 * * * * /etc/ddns.sh") | crontab -
+# Echo step: Updating crontab entry to schedule script every hour
+echo "Updating crontab entry to schedule script every hour"
+(crontab -l ; echo "0 * * * * /root/ddns.sh") | crontab -
+
+# Echo step: Script execution completed
+echo "Script execution completed"
