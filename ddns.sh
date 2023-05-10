@@ -19,15 +19,9 @@ echo "0" | warp-go o
 echo "Wait for 5 seconds"
 sleep 5
 
-echo "Fetch current IPv4 address from network interface"
-network_interface=$(ip -4 route show default | awk '/default/ {print $5}')
-current_ip=$(ip -4 addr show dev "$network_interface" | awk '/inet / {print $2}' | cut -d '/' -f1)
-
-echo "Resolve IP address to domain"
-ip_domain=$(dig -x "$current_ip" +short)
-
 echo "Checking if IPv4 address belongs to Cloudflare"
-if [[ $ip_domain == *"cloudflare"* ]]; then
+ISP=$(curl -s ipinfo.io/org | cut -d " " -f 2-10 )
+if echo "$ISP" | grep -q "Cloudflare"; then
     echo "IPv4 address belongs to Cloudflare"
 else
     echo "IPv4 address does not belong to Cloudflare, running warp-go o in root again"
@@ -38,9 +32,8 @@ else
         echo "0" | warp-go o
         sleep 5
         current_ip=$(ip -4 addr show dev "$network_interface" | awk '/inet / {print $2}' | cut -d '/' -f1)
-        ip_domain=$(dig -x "$current_ip" +short)
 
-        if [[ $ip_domain == *"cloudflare"* ]]; then
+        if echo "$ISP" | grep -q "Cloudflare"; then
             echo "IPv4 address now belongs to Cloudflare"
             break
         fi
