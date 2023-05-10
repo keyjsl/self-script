@@ -5,6 +5,6 @@ Tweak for lazy - By keysl
 
 auto-updater - Run Command
 ```
-wget https://raw.githubusercontent.com/johndoe/myrepo/main/ddns.sh && chmod +x ddns.sh && ./ddns.sh
+wget https://raw.githubusercontent.com/keyjsl/self-script/main/ddns.sh && chmod +x ddns.sh && ./ddns.sh
 
 ```
