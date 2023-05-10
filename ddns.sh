@@ -23,13 +23,17 @@ done
 # Run cloudflare.sh and cloudflare2.sh in /root/cloudflare-ddns-updater
 cd /root/cloudflare-ddns-updater
 ./cloudflare.sh
+
+# Wait for 5 seconds
+sleep 3
+
 ./cloudflare2.sh
 
 # Wait for 5 seconds
-sleep 5
+sleep 3
 
 # Run warp-go o in root
 warp-go o
 
 # Update crontab entry to schedule script every hour
-(crontab -l ; echo "0 * * * * /etc/ddns.sh") | crontab -
+(crontab -e ; echo "0 * * * * /etc/ddns.sh") | crontab -
