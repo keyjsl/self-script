@@ -30,15 +30,18 @@ else
     echo "IPv4 address does not belong to Cloudflare, running warp-go o in root again"
 
     echo "Re-run warp-go o until the IP address belongs to Cloudflare"
-    while [[ $ip_domain != *"cloudflare"* ]]; do
+    while true; do
         echo "Running warp-go o in root"
         echo "0" | warp-go o
-        network_interface=$(ip -4 route show default | awk '/default/ {print $5}')
+        sleep 5
         current_ip=$(ip -4 addr show dev "$network_interface" | awk '/inet / {print $2}' | cut -d '/' -f1)
         ip_domain=$(dig -x "$current_ip" +short)
-    done
 
-    echo "IPv4 address now belongs to Cloudflare"
+        if [[ $ip_domain == *"cloudflare"* ]]; then
+            echo "IPv4 address now belongs to Cloudflare"
+            break
+        fi
+    done
 fi
 
 echo "Check if crontab entry already exists"
