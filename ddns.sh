@@ -12,7 +12,7 @@ elif echo "$ISP" | grep -q "Cloudflare"; then
     echo "0" | warp-go o
     sleep 5
 else
-    echo "IPv4 address does not belong to Cloudflare or Maxis"
+    echo "IPv4 address does not belong to Maxis"
 fi
 
 echo "Running cloudflare.sh and cloudflare2.sh in /root/cloudflare-ddns-updater"
@@ -29,27 +29,21 @@ echo "0" | warp-go o
 echo "Wait for 5 seconds"
 sleep 5
 
-echo "Checking if IPv4 address belongs to Cloudflare"
-if echo "$ISP" | grep -q "Cloudflare"; then
-    echo "IPv4 address belongs to Cloudflare"
-else
-    echo "IPv4 address does not belong to Cloudflare, running warp-go o in root again"
+echo "Checking if ISP belongs to Cloudflare"
+while true; do
+    ISP=$(curl -s ipinfo.io/org | cut -d " " -f 2-10 )
+    if echo "$ISP" | grep -q "Cloudflare"; then
+        echo "ISP belongs to Cloudflare"
+        break
+    else
+        echo "ISP does not belong to Cloudflare, running warp-go o in root again"
 
-    echo "Re-run warp-go o until the IP address belongs to Cloudflare"
-    while true; do
         echo "Running warp-go o in root"
         echo "0" | warp-go o
         sleep 5
-        current_ip=$(ip -4 addr show dev "$network_interface" | awk '/inet / {print $2}' | cut -d '/' -f1)
+    fi
+done
 
-        ISP=$(curl -s ipinfo.io/org | cut -d " " -f 2-10 )
-
-        if echo "$ISP" | grep -q "Cloudflare"; then
-            echo "IPv4 address now belongs to Cloudflare"
-            break
-        fi
-    done
-fi
 
 echo "Check if crontab entry already exists"
 if crontab -l | grep -q "/root/ddns.sh"; then
