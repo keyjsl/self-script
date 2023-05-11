@@ -1,9 +1,17 @@
 #!/bin/bash
 
 echo "ddns.sh"
+ISP=$(curl -s ipinfo.io/org | cut -d " " -f 2-10 )
+if echo "$ISP" | grep -q "Cloudflare"; then
+    echo "IPv4 address belongs to Cloudflare"
+elif echo "$ISP" | grep -q "Maxis"; then
+    echo "IPv4 address belongs to Maxis, skipping warp-go o"
+else
+    echo "IPv4 address does not belong to Cloudflare, running warp-go o in root"
 
-echo "Initiating warp-go o on root and selecting option 0 (exit)"
-echo "0" | warp-go o
+    echo "Running warp-go o in root"
+    echo "0" | warp-go o
+    sleep 5
 
 echo "Running cloudflare.sh and cloudflare2.sh in /root/cloudflare-ddns-updater"
 cd /root/cloudflare-ddns-updater
@@ -20,7 +28,6 @@ echo "Wait for 5 seconds"
 sleep 5
 
 echo "Checking if IPv4 address belongs to Cloudflare"
-ISP=$(curl -s ipinfo.io/org | cut -d " " -f 2-10 )
 if echo "$ISP" | grep -q "Cloudflare"; then
     echo "IPv4 address belongs to Cloudflare"
 else
