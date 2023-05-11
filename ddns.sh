@@ -8,7 +8,7 @@ if echo "$ISP" | grep -q "Cloudflare"; then
 elif echo "$ISP" | grep -q "Maxis"; then
     echo "IPv4 address belongs to Maxis, skipping warp-go o"
 else
-    echo "IPv4 address does not belong to Cloudflare, running warp-go o in root"
+    echo "IPv4 address belong to Cloudflare, running warp-go o in root"
 
     echo "Running warp-go o in root"
     echo "0" | warp-go o
