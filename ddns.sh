@@ -2,6 +2,7 @@
 
 echo "ddns.sh"
 ISP=$(curl -s ipinfo.io/org | cut -d " " -f 2-10 )
+
 if echo "$ISP" | grep -q "Cloudflare"; then
     echo "IPv4 address belongs to Cloudflare"
 elif echo "$ISP" | grep -q "Maxis"; then
